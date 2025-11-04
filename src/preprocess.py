@@ -45,6 +45,24 @@ def create_features(df: pd.DataFrame):
 
     return X, y, num_features, cat_features, bool_features
 
+def process_no_sales(df_no_sales):
+    df_no_sales.rename(columns={"Release date": 'Release'}, inplace=True)
+    df_no_sales = df_no_sales.reindex(columns=["Discount", "Rating", "Release", "Ends", "Price", "Started", "Note"])
+    
+    # Replace features that don't exist with filler values
+    for col in df_no_sales:
+        if col in ["Ends", "Started", "Note"]: # String value features
+            df_no_sales[col] = df_no_sales[col].fillna("")
+        else:                                  # Int value features
+            if (col == "Discount"):
+                df_no_sales[col] = df_no_sales[col].fillna("")
+                continue
+            df_no_sales[col] = df_no_sales[col].fillna(0)
+
+    # Filter out games that are free
+    df_no_sales = df_no_sales[df_no_sales["Price"] != 0]
+    return df_no_sales
+
 def build_pipeline(num_features, cat_features):
     numeric_transformer = Pipeline(steps=[
         ("scaler", StandardScaler())
