@@ -1,1 +1,6 @@
+myvenv/
+__pycache__/
+*.pyc
+.DS_Store
+data/
 steam_pred_env/
